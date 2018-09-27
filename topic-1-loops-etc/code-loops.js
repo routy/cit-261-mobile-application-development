@@ -1,12 +1,15 @@
 
 /**
  *
+ * @author Nick Routsong
+ *
  * Loops - There are different kinds of loops that can be used.
  *
  */
 
-// For loops
-
+/**
+ * For Loops
+ */
 console.log('####### EXAMPLE: FOR LOOPS #######');
 
 var total   = 10;
@@ -16,8 +19,9 @@ for ( i = 1; i <= total; i++ ) {
     console.log( i + ' ' );
 }
 
-// While loops
-
+/**
+ * While Loops
+ */
 console.log('####### EXAMPLE: WHILE LOOPS #######');
 
 var processing = true;
@@ -33,18 +37,35 @@ while ( processing === true ) {
     count++;
 }
 
-// Do, While loops
-// This type of loop is useful if you need to ensure that the block of code is run at least once as the while condition is checked after the first iteration
-
+/**
+ * Do, While Loops
+ *
+ * This type of loop is useful if you need to ensure that the block of code is run at least once as the while condition
+ * is checked after the first iteration.
+ */
 console.log('####### EXAMPLE: DO/WHILE LOOPS #######');
+
+processing = false;
 
 do {
 
     console.log('I have to say this at least once... and that is all the chance I will get because the processing variable is set to false.');
 
-} while ( processing === true  );
+} while ( processing === true );
 
 
-// For/In Loops
+/**
+ * For/In Loops
+ *
+ * This kind of loop can be useful when needing to iterate through an object, such as a JSON response that needs to be
+ * validated or modified.
+ *
+ */
+console.log('####### EXAMPLE: FOR/IN LOOPS #######');
+var property;
+
+for (property in location) {
+    console.log( property );
+}
 
 
