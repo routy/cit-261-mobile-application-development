@@ -121,9 +121,10 @@ Order.prototype.drawTable = function() {
             html += '</tr>';
         } );
 
-        html += '<tr><td></td>';
-        html += '<td><strong>Total</strong></td>';
+        html += '<tr>';
+        html += '<td colspan="2" style="text-align:right;"><strong>Total</strong></td>';
         html += '<td>' + order.orderTotal() + '</td>';
+        html += '</tr>';
 
     } else {
 
