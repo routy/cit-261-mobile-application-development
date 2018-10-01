@@ -1,0 +1,8 @@
+table#order {
+    width: 100%;
+}
+
+table#order td {
+    border: 1px solid #CCCCCC;
+    padding:5px;
+}

@@ -48,4 +48,6 @@ array_now_an_object['last_name']  = 'Routsong';
 array_now_an_object['email']      = 'routy@byui.edu';
 array_now_an_object['class']      = 'CIT 261';
 
+array_now_an_object.first_name = 'Nicholas';
+
 console.log('`array_now_an_object` output: ', array_now_an_object);
