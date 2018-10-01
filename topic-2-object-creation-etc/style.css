@@ -6,3 +6,9 @@ table#order td {
     border: 1px solid #CCCCCC;
     padding:5px;
 }
+
+table#order td span {
+    font-size:75%;
+    font-style: italic;
+    display:block;
+}

@@ -115,7 +115,7 @@ Order.prototype.drawTable = function() {
 
         this.orderLineItems.forEach( function( item, index ) {
             html += '<tr>';
-            html += '<td>'+ item.product.name +'</td>';
+            html += '<td>'+ item.product.name +'<span>' + item.product.description + '</span></td>';
             html += '<td>'+ item.quantity +'</td>';
             html += '<td>'+ parseFloat(item.quantity * item.product.price).toFixed(2) +'</td>';
             html += '</tr>';
