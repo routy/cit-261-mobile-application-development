@@ -103,7 +103,7 @@ Order.prototype.orderTotal = function() {
 };
 
 /**
- *
+ * Populate the Order table with the current order items.
  */
 Order.prototype.drawTable = function() {
 
@@ -157,11 +157,14 @@ function populateProductSelector( products ) {
 
 /**
  *
+ * Instantiate a new Order object.
  * @type {Order}
  */
 let order = new Order();
 
 /**
+ *
+ * Instantiate various products for use within the example. The products include an ID, name, description and price.
  *
  * @type {[Product]}
  */
@@ -185,6 +188,10 @@ populateProductSelector( products );
 document.getElementById('productAdd').addEventListener('click', function() {
     const selectedProduct = document.getElementById('productSelector');
     const productQuantity = document.getElementById('productQuantity').value;
+
+    /**
+     * Create a new orderLineItem to add to the orderLineItems array on the order object
+     */
     order.addOrderLineItem( new OrderLineItem( products[selectedProduct.selectedIndex - 1], parseInt( productQuantity ) ) );
 });
 
