@@ -1,1 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Topic 3 - Objects</title>
+</head>
+<body>
 
+    <h1>Contact</h1>
+
+    <form id="topic-3-parse">
+        <h3>Populate Contact Form</h3>
+        <p>The following data is in JSON format within the textfield. We can take the contents of this text area and turn it into a JavaScript Object.
+        We can then use this Object to populate the form below.</p>
+        <textarea id="jsonString" rows="3" style="width:100%;">{"first_name" : "Nick", "last_name" : "Routsong", "class_title" : "CIT 261", "email" : "routy@byui.edu"}</textarea>
+        <button type="button" id="populateFormFromJson">Populate Form</button>
+    </form>
+
+    <form id="contact">
+
+        <h4>Contact Form</h4>
+        <input type="text" id="first_name" name="first_name" value="" placeholder="First Name"/>
+        <input type="text" id="last_name" name="last_name" value="" placeholder="Last Name"/>
+        <input type="text" id="class_title" name="class_title" value="" placeholder="Class Title"/>
+        <input type="text" id="email" name="email" value="" placeholder="Email Address"/>
+        <button type="button" id="convertFormToJson">Convert Form to JSON String</button>
+
+        <h4>Output:</h4>
+        <textarea rows="3" style="width:100%;" id="formToJsonString"></textarea>
+    </form>
+
+    <script type="text/javascript">
+
+        /**
+         * When the button#populateFormFromJson is clicked, we will run the following function.
+         */
+        document.getElementById('populateFormFromJson').addEventListener('click', function() {
+            /**
+             * We will retrieve the JSON string value from the textarea input in order to turn it into a JavaScript
+             * object. We will then loop through the object and populate the form with the values.
+             */
+            let jsonString = document.getElementById('jsonString').innerHTML;
+            let contact = JSON.parse(jsonString);
+            console.log('Contact Object Populated: ', contact);
+            for( field in contact ) {
+                document.getElementById(field).value = contact[field];
+            }
+        });
+
+        /**
+         * When the button#convertFormToJson is clicked, we will run the following function.
+         */
+        document.getElementById('convertFormToJson').addEventListener('click', function() {
+
+            let contactForm = document.getElementById('contact');
+            let formInput;
+
+            /**
+             * We are defining which fields we want to consider as fillable for the contact object
+             * @type {{first_name: null, last_name: null, email: null, class_title: null}}
+             */
+            let contact = {
+                "first_name" : null,
+                "last_name" : null,
+                "class_title" : null,
+                "email" : null
+            };
+
+            /**
+             * Here we are looping through the form elements and populating the contact object with the values
+             * found in the form.
+             */
+            for( let i = 0; formInput = contactForm.elements[i++]; ) {
+                if ( typeof contact[formInput.name] !== 'undefined' && formInput.name !== '' ) {
+                    contact[formInput.name] = formInput.value;
+                }
+            }
+
+            /**
+             * We will now convert the form values into a JSON string
+             */
+            document.getElementById('formToJsonString').innerHTML = JSON.stringify(contact);
+
+        });
+
+    </script>
+
+</body>
+</html>
