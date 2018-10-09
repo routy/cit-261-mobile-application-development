@@ -9,6 +9,15 @@
  * https://medium.com/dailyjs/instantiation-patterns-in-javascript-8fdcf69e8f9b
  */
 
+
+/**
+ * ECMA V6 introduces `let` and `const` usage over `var`
+ *
+ * The idea is that let would be a variable that can change throughout its life cycle, whereas
+ * a variable instantiated using const is one that should not be updated after the value is set.zoom
+ */
+
+
 /**
  *
  * @constructor
@@ -80,8 +89,8 @@ Order.prototype.addOrderLineItem = function( orderLineItem ) {
  *
  */
 Order.prototype.emptyOrder = function(  ) {
-    order.orderLineItems = [];
-    order.drawTable();
+    this.orderLineItems = [];
+    this.drawTable();
 };
 
 /**
@@ -123,7 +132,7 @@ Order.prototype.drawTable = function() {
 
         html += '<tr>';
         html += '<td colspan="2" style="text-align:right;"><strong>Total</strong></td>';
-        html += '<td>' + order.orderTotal() + '</td>';
+        html += '<td>' + this.orderTotal() + '</td>';
         html += '</tr>';
 
     } else {
@@ -137,6 +146,7 @@ Order.prototype.drawTable = function() {
     table.innerHTML = html;
 
 };
+
 
 /**
  *
@@ -188,7 +198,6 @@ populateProductSelector( products );
 document.getElementById('productAdd').addEventListener('click', function() {
     const selectedProduct = document.getElementById('productSelector');
     const productQuantity = document.getElementById('productQuantity').value;
-
     /**
      * Create a new orderLineItem to add to the orderLineItems array on the order object
      */
