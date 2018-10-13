@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Topic 1 - Loops, Arrays, Conditional Statements, Functions, Parameters and Variables</title>
+
+    <style type="text/css">
+        #colorSwatch {
+            height:200px;
+            width:200px;
+            border: 3px solid #CCCCCC;
+            background: #000000;
+            margin: 20px 0;
+            text-align: center;
+            color: #FFFFFF;
+            transition: background-color 0.5s ease;
+        }
+    </style>
+
+</head>
+<body>
+
+<h1>Color Swatches</h1>
+<p>The block of color below is being changed to a different color based on an array that contains multiple color hex values. It has a delay of 2 seconds between each change.</p>
+
+<div id="colorSwatch"></div>
+
+<h3>Learn More</h3>
+<p>To learn more about these topics, you can review the code from additional JavaScript files below:</p>
+<ul>
+    <li><a href="https://github.com/routy/cit-261-mobile-application-development/tree/master/docs/topic-1-loops-etc/code-arrays.js" target="_blank" title="Arrays">Arrays</a></li>
+    <li><a href="https://github.com/routy/cit-261-mobile-application-development/tree/master/docs/topic-1-loops-etc/code-conditional-statements.js" target="_blank" title="Conditional Statements">Conditional Statements</a></li>
+    <li><a href="https://github.com/routy/cit-261-mobile-application-development/tree/master/docs/topic-1-loops-etc/code-functions.js" target="_blank" title="Functions">Functions</a></li>
+    <li><a href="https://github.com/routy/cit-261-mobile-application-development/tree/master/docs/topic-1-loops-etc/code-loops.js" target="_blank" title="Loops">Loops</a></li>
+    <li><a href="https://github.com/routy/cit-261-mobile-application-development/tree/master/docs/topic-1-loops-etc/code-parameters.js" target="_blank" title="Parameters">Parameters</a></li>
+    <li><a href="https://github.com/routy/cit-261-mobile-application-development/tree/master/docs/topic-1-loops-etc/code-variables.js" target="_blank" title="Variables">Variables</a></li>
+</ul>
+
+<script type="text/javascript">
+
+    // These are all the colors that we will be cycling through
+    const colors = ['#3a2941', '#7b25f3', '#57865d', '#af4bd6', 'NotAColor', '#482da5', '#b61472', '#e94327', '#81e827'];
+    // This is the colorSwatch element that we will be modifying the background color and innerHtml of
+    const colorSwatchElement = document.getElementById('colorSwatch');
+    // This sets how many seconds between each color to be displayed
+    const intervalTime = 2; // How many seconds between colors?
+    // We will start with the first color.
+    let colorIndex = 0;
+
+    /**
+     * Let's update the color swatch!
+     */
+    function updateBackgroundColor() {
+
+        let color = colors[colorIndex];
+
+        // Let's make sure it is indeed a color hex, if it isn't lets display a different message
+        if ( color.match(/^#(?:[0-9a-fA-F]{3}){1,2}$/) ) {
+            colorSwatchElement.style.background = color;
+            colorSwatchElement.innerHTML = '<h5>GOOD COLOR!</h5><p>' + color + '</p>';
+        } else {
+            colorSwatchElement.removeAttribute('style');
+            colorSwatchElement.innerHTML = '<h5>BAD COLOR!</h5><p>' + color + '</p>';
+        }
+
+        // We need to set the colorIndex back to 0 if we have reached the end
+        if ( (colors.length - 1) <= colorIndex ) {
+            colorIndex = 0;
+        } else {
+            colorIndex++;
+        }
+
+    }
+
+    /**
+     * Run the defined function every $intervalTime seconds
+     *
+     * The setInterval function is a built-in JavaScript function. We are passing the function name and the
+     * time in milliseconds as parameters to the function.
+     *
+     */
+    setInterval( updateBackgroundColor, intervalTime * 1000 )
+
+</script>
+
+</body>
+</html>
