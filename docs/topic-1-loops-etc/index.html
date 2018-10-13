@@ -15,6 +15,9 @@
             color: #FFFFFF;
             transition: background-color 0.5s ease;
         }
+        #addColor {
+            margin-left:5px;
+        }
     </style>
 
 </head>
@@ -24,6 +27,10 @@
 <p>The block of color below is being changed to a different color based on an array that contains multiple color hex values. It has a delay of 2 seconds between each change.</p>
 
 <div id="colorSwatch"></div>
+
+<p>Enter a new color hex below to add it into the cycle.</p>
+<input id="addColorSwatch" type="text" placeholder="Enter Color Hex" /><button id="addColor">Add Color</button>
+<p id="addColorSwatchStatus"></p>
 
 <h3>Learn More</h3>
 <p>To learn more about these topics, you can review the code from additional JavaScript files below:</p>
@@ -39,7 +46,7 @@
 <script type="text/javascript">
 
     // These are all the colors that we will be cycling through
-    const colors = ['#3a2941', '#7b25f3', '#57865d', '#af4bd6', 'NotAColor', '#482da5', '#b61472', '#e94327', '#81e827'];
+    let colors = ['#3a2941', '#7b25f3', '#57865d', '#af4bd6', 'NotAColor', '#482da5', '#b61472', '#e94327', '#81e827', '#0682e2'];
     // This is the colorSwatch element that we will be modifying the background color and innerHtml of
     const colorSwatchElement = document.getElementById('colorSwatch');
     // This sets how many seconds between each color to be displayed
@@ -53,6 +60,7 @@
     function updateBackgroundColor() {
 
         let color = colors[colorIndex];
+        let statusMsg = '';
 
         // Let's make sure it is indeed a color hex, if it isn't lets display a different message
         if ( color.match(/^#(?:[0-9a-fA-F]{3}){1,2}$/) ) {
@@ -73,13 +81,49 @@
     }
 
     /**
+     * Validate the string passed is a color.
+     * @param color string
+     */
+    function isAColor( color ) {
+        return !!( color.match(/^#(?:[0-9a-fA-F]{3}){1,2}$/) );
+    }
+
+    /**
      * Run the defined function every $intervalTime seconds
      *
      * The setInterval function is a built-in JavaScript function. We are passing the function name and the
      * time in milliseconds as parameters to the function.
      *
      */
-    setInterval( updateBackgroundColor, intervalTime * 1000 )
+    setInterval( updateBackgroundColor, intervalTime * 1000 );
+
+    /**
+     * Handle the click of the addColor button
+     */
+    document.getElementById('addColor').addEventListener('click', function() {
+
+        let colorSwatch = document.getElementById('addColorSwatch').value;
+
+        if ( isAColor( colorSwatch ) ) {
+            colors.push(colorSwatch);
+            statusMsg = 'Color Added! There are now ' + colors.length + ' colors in the cycle.';
+        } else {
+            statusMsg = 'BAD COLOR! Color was not in the correct format.';
+        }
+
+        // Display the status of the attempted add
+        document.getElementById('addColorSwatchStatus').innerText = statusMsg;
+
+        // Empty out the status message after 4 seconds
+        setTimeout( function() {
+            document.getElementById('addColorSwatchStatus').innerText = '';
+        }, 4000);
+
+        // Set the color back to empty
+        document.getElementById('addColorSwatch').value = '';
+
+    });
+
 
 </script>
 
