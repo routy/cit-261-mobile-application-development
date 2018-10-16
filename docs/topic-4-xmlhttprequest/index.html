@@ -2,11 +2,109 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Topic 4 - </title>
+    <title>Topic 4 - Using XMLHTTPRequest to Consume a JSON Web Service</title>
 </head>
 <body>
 
+<h1>Chuck Norris Jokes</h1>
+<h2 id="joke"></h2>
+
+<button id="nextJoke">Get New Joke</button>
+
+<span id="totalJokes"></span>
+
 <script type="text/javascript">
+
+    /**
+     *
+     */
+    const Request = function() {
+
+        this.request = null;
+
+        // Starting in IE7, we no longer have to use ActiveXObject, they all use XMLHttpRequest
+        if (window.XMLHttpRequest) {
+            this.request = new XMLHttpRequest();
+        } else {
+            this.request = false;
+        }
+
+    };
+
+    /**
+     *
+     */
+    const Jokes = function() {
+
+        this.jokes = [];
+        this.currentJoke = 0;
+
+    };
+
+     /**
+      *
+      */
+    const Joke = function( values ) {
+
+        this.category = (typeof values.category !== 'undefined') ? values.category : null;
+        this.icon_url = (typeof values.icon_url !== 'undefined') ? values.icon_url : null;
+        this.id       = (typeof values.id       !== 'undefined') ? values.id : null;
+        this.url      = (typeof values.url      !== 'undefined') ? values.url : null;
+        this.value    = (typeof values.value    !== 'undefined') ? values.value : null;
+
+    };
+
+    /**
+     *
+     */
+    Jokes.prototype.getJoke = function() {
+
+        let self = this;
+        let requestInstance  = new Request();
+
+        requestInstance.request.open( 'GET', 'https://api.chucknorris.io/jokes/random', true );
+        requestInstance.request.send();
+
+        requestInstance.request.addEventListener("load", function() {
+
+            // Transform the received JSON string into an object
+            response = JSON.parse( requestInstance.request.responseText );
+
+            // Instantiate a new joke and set the response content as the values for it
+            let joke = new Joke( response );
+
+            // Add the new joke to the jokes array
+            self.jokes.push(joke);
+
+            // Display the joke that was just added
+            self.setCurrentJoke(self.jokes.length-1);
+
+        }, false);
+
+    };
+
+    /**
+     *
+     */
+    Jokes.prototype.setCurrentJoke = function( index ) {
+
+        if ( typeof this.jokes[index] !== 'undefined' ) {
+            document.getElementById('joke').innerText = this.jokes[index].value;
+            this.currentJoke = index;
+        }
+
+    };
+
+    /*
+     * Instantiate the Jokes object and make a call to retrieve a joke
+     */
+    let jokes = new Jokes();
+    jokes.getJoke();
+
+
+    document.getElementById('nextJoke').addEventListener('click', function() {
+        jokes.getJoke();
+    });
 
 </script>
 

@@ -2,13 +2,166 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Topic 5 - </title>
+    <title>Topic 5 - Local Storage API, Storing and Retrieving Simple Data, Arrays, Associative Arrays, and Objects</title>
 </head>
 <body>
 
-    <script type="text/javascript">
+<h1>Chuck Norris Jokes - Expanded!</h1>
+<h2 id="joke"></h2>
 
-    </script>
+<button id="previousJoke">Previous Joke</button>
+<button id="nextJoke">Next Joke</button>
+<button id="newJoke">New Joke</button>
+
+<p>Total Jokes: <span id="totalJokes"></span></p>
+
+<script type="text/javascript">
+
+    /**
+     *
+     */
+    const Request = function() {
+
+        this.request = null;
+
+        // Starting in IE7, we no longer have to use ActiveXObject, they all use XMLHttpRequest
+        if (window.XMLHttpRequest) {
+            this.request = new XMLHttpRequest();
+        } else {
+            this.request = false;
+        }
+
+    };
+
+    /**
+     *
+     */
+    const Jokes = function() {
+
+        this.jokes = [];
+        this.currentJoke = 0;
+
+        if ( localStorage.getItem('jokes') ) {
+            this.currentJoke = localStorage.getItem('currentJoke');
+            this.jokes = JSON.parse(localStorage.getItem('jokes'));
+            this.setCurrentJoke(this.currentJoke);
+            this.setTotal();
+        } else {
+            // If we don't have any jokes in localStorage, we will go ahead and retrieve a new one
+            this.getNewJoke();
+        }
+
+    };
+
+    /**
+     *
+     */
+    const Joke = function( values ) {
+
+        this.category = (typeof values.category !== 'undefined') ? values.category : null;
+        this.icon_url = (typeof values.icon_url !== 'undefined') ? values.icon_url : null;
+        this.id       = (typeof values.id       !== 'undefined') ? values.id : null;
+        this.url      = (typeof values.url      !== 'undefined') ? values.url : null;
+        this.value    = (typeof values.value    !== 'undefined') ? values.value : null;
+
+    };
+
+    /**
+     *
+     */
+    Jokes.prototype.getNewJoke = function() {
+
+        let self = this;
+        let requestInstance  = new Request();
+
+        requestInstance.request.open( 'GET', 'https://api.chucknorris.io/jokes/random', true );
+        requestInstance.request.send();
+
+        requestInstance.request.addEventListener("load", function() {
+
+            // Transform the received JSON string into an object
+            response = JSON.parse( requestInstance.request.responseText );
+
+            // Instantiate a new joke and set the response content as the values for it
+            let joke = new Joke( response );
+
+            // Add the new joke to the jokes array
+            self.jokes.push(joke);
+
+            // Display the joke that was just added
+            self.setCurrentJoke(self.jokes.length-1);
+
+            self.setTotal();
+
+            if ( typeof( Storage ) !== 'undefined' ) {
+                localStorage.setItem("jokes", JSON.stringify(self.jokes));
+            }
+
+        }, false);
+
+    };
+
+    /**
+     *
+     */
+    Jokes.prototype.setCurrentJoke = function( index ) {
+
+        index = parseInt(index);
+
+        if ( typeof this.jokes[index] !== 'undefined' ) {
+            document.getElementById('joke').innerText = this.jokes[index].value;
+            this.currentJoke = index;
+            localStorage.setItem('currentJoke', index);
+        }
+
+    };
+
+    /**
+     *
+     */
+    Jokes.prototype.getNextJoke = function() {
+        this.setCurrentJoke(this.currentJoke+1);
+    };
+
+    /**
+     *
+     */
+    Jokes.prototype.getPreviousJoke = function() {
+        this.setCurrentJoke(this.currentJoke-1);
+    };
+
+    Jokes.prototype.setTotal = function() {
+        document.getElementById('totalJokes').innerText = this.jokes.length;
+    };
+
+    /**
+     *
+     */
+    document.getElementById('nextJoke').addEventListener('click', function() {
+        jokes.getNextJoke();
+    });
+
+    /**
+     *
+     */
+    document.getElementById('previousJoke').addEventListener('click', function() {
+        jokes.getPreviousJoke();
+    });
+
+    /**
+     *
+     */
+    document.getElementById('newJoke').addEventListener('click', function() {
+        jokes.getNewJoke();
+    });
+
+
+    /*
+     * Instantiate the Jokes object and make a call to retrieve a joke
+     */
+    let jokes = new Jokes();
+
+</script>
 
 </body>
 </html>
