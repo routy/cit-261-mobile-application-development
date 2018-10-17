@@ -65,6 +65,21 @@
         requestInstance.request.open( 'GET', 'https://api.chucknorris.io/jokes/random', true );
         requestInstance.request.send();
 
+
+        /*
+        
+        Below are the different event types that can be listened for:
+        
+        requestInstance.request.addEventListener("progress", function() {} );
+        requestInstance.request.addEventListener("load", function() {});
+        requestInstance.request.addEventListener("error", function() {});
+        requestInstance.request.addEventListener("abort", function() {});
+
+        // This last one will fire but not tell us if it was successful or not, it could be considered a 'Done' status.
+        requestInstance.request.addEventListener("loadend", function() {});
+
+        */
+        
         requestInstance.request.addEventListener("load", function() {
 
             // Transform the received JSON string into an object
