@@ -3,10 +3,53 @@
 <head>
     <meta charset="UTF-8">
     <title>Topic 7 - </title>
+
+    <style type="text/css">
+        #color-swatch {
+            border:3px solid #000000;
+            height: 250px;
+            width:250px;
+            background-size: cover;
+        }
+        .swatch-dolphin {
+            background-image: url('assets/dolphin.jpg');
+        }
+        .swatch-dots {
+            background-image: url('assets/dots.jpg');
+        }
+        .swatch-ocean {
+            background-image: url('assets/ocean.jpg');
+        }
+        .swatch-water-drop {
+            background-image: url('assets/water-drop.jpg');
+        }
+    </style>
+
 </head>
 <body>
+    <h1>Background Image Changer</h1>
+    <div id="color-swatch" class="swatch-dolphin">
+
+    </div>
+    <p>Select a background image below:</p>
+    <select name="background-selector" id="background-selector">
+        <option value="dolphin">Dolphin</option>
+        <option value="dots">Dots</option>
+        <option value="ocean">Ocean</option>
+        <option value="water-drop">Water Drop</option>
+    </select>
 
     <script type="text/javascript">
+
+        document.getElementById('background-selector').addEventListener('change', function() {
+
+            let select = document.getElementById('background-selector');
+            let optionValue = select.options[select.selectedIndex].value;
+
+            // We will set the element's class name to the selected option's value, prepending "swatch-" to the value.
+            document.getElementById('color-swatch').className = 'swatch-' + optionValue;
+
+        });
 
     </script>
 

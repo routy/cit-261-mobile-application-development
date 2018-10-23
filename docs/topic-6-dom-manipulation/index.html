@@ -2,11 +2,59 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Topic 6 - </title>
+    <title>Topic 6 - DOM Manipulation Using createElement, appendChild, insertBefore, removeChild, etc.</title>
 </head>
 <body>
 
+    <ul id="list">
+        <li>List item 1</li>
+    </ul>
+    <p>Add and remove as many items as you'd like from the list, but you must keep 1.</p>
+
+    <button id="element-add-to-top">Add New Item To Top</button>
+    <button id="element-add-to-bottom">Add New Item To Bottom</button>
+    <button id="element-remove-from-bottom">Remove Last Item</button>
+
     <script type="text/javascript">
+
+        let count = 1;
+
+        function createListItem()
+        {
+            let item  = document.createElement('li');
+            item.innerText = 'List item ' + ++count;
+
+            return item;
+        }
+
+        document.getElementById('element-add-to-top').addEventListener('click', function() {
+
+            let listItem = createListItem();
+            let list = document.getElementById('list');
+
+            // Insert the new li before the first child node
+            list.insertBefore( listItem, list.childNodes[0] );
+
+        });
+
+        document.getElementById('element-add-to-bottom').addEventListener('click', function() {
+
+            let listItem = createListItem();
+            document.getElementById('list').appendChild( listItem );
+
+        });
+
+        document.getElementById('element-remove-from-bottom').addEventListener('click', function() {
+
+            let list = document.getElementById('list');
+            let listNodes = list.getElementsByTagName('li');
+
+            if ( listNodes.length > 1 ) {
+                // Get the total number of li nodes, subtract 1 to get the key of the last one
+                list.removeChild(listNodes[listNodes.length-1]);
+            }
+
+        });
 
     </script>
 
