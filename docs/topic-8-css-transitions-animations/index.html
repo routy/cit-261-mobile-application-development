@@ -2,11 +2,72 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Topic 9 - </title>
+    <title>Topic 8 - Creating CSS3 Transitions and Animations in CSS and triggering them with JavaScript</title>
+    <style type="text/css">
+        #space-container {
+            width: 500px;
+            height: 400px;
+            background-position: 50% 50%;
+            background-repeat: no-repeat;
+            background-size: 500px 400px;
+            background-image: url('assets/space.jpg');
+
+            -webkit-transition: all 2.5s ease-in-out;
+            -moz-transition: all 2.5s ease-in-out;
+            -ms-transition: all 2.5s ease-in-out;
+            -o-transition: all 2.5s ease-in-out;
+            transition: all 2.5s ease-in-out;
+            margin: 20px 0;
+        }
+        #space-container.zoom {
+            background-size: 2500px 1600px !important;
+        }
+
+        /**
+         * Define the name and details of the animation.
+         */
+        @keyframes slidein {
+            from {
+                margin-left: 100%;
+                width: 300%;
+            }
+
+            to {
+                margin-left: 0%;
+                width: 100%;
+            }
+        }
+        p {
+            /* What is the name of the animation defining what it should do? */
+            animation-name: slidein;
+            /* How long do we want the animation to take? */
+            animation-duration:6s;
+            /* How many times do we want the animation to occur? */
+            animation-iteration-count: infinite;
+        }
+    </style>
 </head>
 <body>
 
+    <h3>Transition</h3>
+    <div id="space-container">
+    </div>
+    <button id="zoom-in">Travel into space</button>
+    <button id="zoom-out">Back it up</button>
+
+    <h3>Animation</h3>
+    <p>This is a transition that happens automatically on page load.</p>
+
     <script type="text/javascript">
+        document.getElementById('zoom-in').addEventListener('click', function() {
+            let space = document.getElementById('space-container');
+            space.className = 'zoom';
+        });
+        document.getElementById('zoom-out').addEventListener('click', function() {
+            let space = document.getElementById('space-container');
+            space.className = '';
+        });
+
 
     </script>
 

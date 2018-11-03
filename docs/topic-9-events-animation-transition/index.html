@@ -2,11 +2,159 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Topic 5 - </title>
+    <title>Topic 9 - Standard JavaScript Events Including those for Mobile Devices ( Ex. onTouchBegin, onLoad, etc.) and
+        Animation and Transition Events</title>
+    <style type="text/css">
+        .event-proof {
+            height: 25px;
+            width: 25px;
+            border-radius:500px;
+            background: red;
+            margin:10px auto 10px auto;
+        }
+        .event-proof.triggered {
+            background: green;
+            transition: background .5s ease-in-out;
+        }
+        .event-wrapper-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+        }
+        .event-wrapper {
+            flex: 1;
+            background: #eeeeee;
+            padding:10px;
+            margin-right:20px;
+            margin-bottom:20px;
+            text-align:center;
+        }
+        .mouse-zone {
+            width:100%;
+            background: yellow;
+        }
+        .mouse-zone p {
+            padding: 10px;
+        }
+
+        /**
+         * Define the name and details of the animation.
+         */
+        @keyframes slidein {
+            from {
+                margin-left: 100%;
+                width: 300%;
+            }
+
+            to {
+                margin-left: 0%;
+                width: 100%;
+            }
+        }
+        #event-onanimationstart-trigger {
+            /* What is the name of the animation defining what it should do? */
+            animation-name: slidein;
+            /* How long do we want the animation to take? */
+            animation-duration: 2s;
+            /* How many times do we want the animation to occur? */
+            animation-iteration-count: 3;
+        }
+    </style>
 </head>
 <body>
 
+    <h1>JavaScript Events</h1>
+    <p>There are many JavaScript events that can be listened for. We will only be covering a few of the most common ones
+        here, but for a more extensive list, you can visit: <a href="https://www.w3schools.com/jsref/dom_obj_event.asp"
+                                                               title="JavaScript DOM Events">W3 Schools DOM Events</a></p>
+    <p>Events extend the Event Object and have a defined set of properties and methods that can be used. More information on
+        the Event Object can be found here: <a href="https://www.w3schools.com/jsref/obj_event.asp" title="Event Object">W3
+            Schools Event Object</a></p>
+
+    <div class="event-wrapper-container">
+        <div class="event-wrapper">
+            <h3>onload</h3>
+            <div id="event-onload" class="event-proof"></div>
+        </div>
+        <div class="event-wrapper">
+            <h3>onclick</h3>
+            <div id="event-onclick" class="event-proof"></div>
+            <button id="event-onclick-trigger">Click Me.</button>
+        </div>
+        <div class="event-wrapper">
+            <h3>onchange</h3>
+            <div id="event-onchange" class="event-proof"></div>
+            <input id="event-onchange-trigger" type="text" style="width:100%" placeholder="Change me..."/>
+        </div>
+        <div class="event-wrapper">
+            <h3>onmouseover, mouseout</h3>
+            <div id="event-onmouseover" class="event-proof"></div>
+            <div id="event-onmouseover-trigger" class="mouse-zone"><p>Here mousey, mousey...</p></div>
+        </div>
+        <div class="event-wrapper">
+            <h3>onkeydown, onkeyup</h3>
+            <div id="event-onkeydown" class="event-proof"></div>
+            <input id="event-onkeydown-trigger" type="text" style="width:100%" placeholder="Change me..."/>
+        </div>
+        <div class="event-wrapper event-onanimationstart">
+            <h3>animationstart, animationend</h3>
+            <div id="event-onanimationstart" class="event-proof"></div>
+            <p id="event-onanimationstart-trigger">Can you read me?</p>
+        </div>
+    </div>
+
     <script type="text/javascript">
+
+        /**
+         * OnLoad event handler
+         */
+        window.addEventListener('load', function ( event ) {
+            document.getElementById('event-onload').className = 'event-proof triggered';
+        });
+
+        /**
+         * OnClick event handler
+         */
+        document.getElementById('event-onclick-trigger').addEventListener('click', function (event) {
+            document.getElementById('event-onclick').className = 'event-proof triggered';
+        });
+
+        /**
+         * OnChange event handler
+         */
+        document.getElementById('event-onchange-trigger').addEventListener('change', function (event) {
+            document.getElementById('event-onchange').className = 'event-proof triggered';
+        });
+
+        /**
+         * OnMouseover, OnMouseout event handlers
+         */
+        document.getElementById('event-onmouseover-trigger').addEventListener('mouseover', function (event) {
+            document.getElementById('event-onmouseover').className = 'event-proof triggered';
+        });
+        document.getElementById('event-onmouseover-trigger').addEventListener('mouseout', function (event) {
+            document.getElementById('event-onmouseover').className = 'event-proof';
+        });
+
+        /**
+         * OnKeydown, OnKeyup event handlers
+         */
+        document.getElementById('event-onkeydown-trigger').addEventListener('keydown', function (event) {
+            document.getElementById('event-onkeydown').className = 'event-proof triggered';
+        });
+        document.getElementById('event-onkeydown-trigger').addEventListener('keyup', function (event) {
+            document.getElementById('event-onkeydown').className = 'event-proof';
+        });
+
+        /**
+         * On animationstart and animationend event handlers
+         */
+        document.getElementById('event-onanimationstart-trigger').addEventListener('animationstart', function (event) {
+            document.getElementById('event-onanimationstart').className = 'event-proof triggered';
+        });
+        document.getElementById('event-onanimationstart-trigger').addEventListener('animationend', function (event) {
+            document.getElementById('event-onanimationstart').className = 'event-proof';
+        });
 
     </script>
 
