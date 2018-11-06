@@ -2,11 +2,169 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Topic 11 - </title>
+    <title>Topic 11 - Designing, Defining, and Triggering CSS3 Transitions without Custom Libraries (Thought Library)</title>
+    <style type="text/css">
+
+        /*
+         * Styles for Example 1
+         */
+        #example-slide-show {
+            width:250px;
+            padding-left:0px;
+        }
+
+        #example-slide-show li {
+            list-style:none;
+            visibility: hidden;
+            height:0;
+            opacity: 0;
+        }
+
+        #example-slide-show li.active {
+            visibility: visible;
+            height: auto;
+            width: 100%;
+            min-height: 100%;
+            transition: opacity .5s ease-in-out;
+            opacity: 1;
+        }
+
+        /*
+         * Styles for Example 2
+         */
+        #example-hover-transitions {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+        }
+
+        #example-hover-transitions div {
+            flex: 1;
+            width: 200px;
+            height: 200px;
+            background: #000000;
+            color: #FFFFFF;
+            text-align:center;
+            transition: all 1s ease;
+            margin-right:20px;
+        }
+
+        #example-hover-transitions div:last-child {
+            margin-right: 0;
+        }
+
+        #example-hover-transitions .hover-transition-1 {
+            background: #45802d;
+        }
+        #example-hover-transitions .hover-transition-1:hover {
+            color: #000000;
+            background: #ee5f46;
+        }
+
+        #example-hover-transitions .hover-transition-2 {
+            background: #665c80;
+            opacity: .5;
+        }
+        #example-hover-transitions .hover-transition-2:hover {
+            opacity: 1;
+        }
+
+        #example-hover-transitions .hover-transition-3:hover {
+            font-size:60px;
+        }
+
+        /*
+         * Styles for Example 3
+         */
+        #example-clock {
+            background: #FFFFFF;
+            border: 2px solid #000000;
+            border-radius: 500px;
+            height:250px;
+            width:250px;
+        }
+
+        #example-seconds-hand {
+            width: 2px;
+            height: 120px;
+            background: #FF0000;
+            margin: 5px auto 0 auto;
+            transition: transform 0s linear; /* When we remove the active class, we want it to get back to it's original position without any visible transform */
+            transform-origin: bottom center;
+        }
+
+        #example-clock.active #example-seconds-hand {
+            transform: rotate(360deg);
+            transition: transform 60s linear; /* Seconds in 1 minute */
+
+        }
+
+    </style>
 </head>
 <body>
 
+    <h1>Exploring CSS Transitions through Examples</h1>
+
+    <h3>Example 1: Slide show transitions on a timer loop</h3>
+
+    <ul id="example-slide-show">
+        <li class="active"><img src="https://picsum.photos/200?image=0" alt="Random Photo"></li>
+        <li><img src="https://picsum.photos/200?image=1" alt="Random Photo"></li>
+        <li><img src="https://picsum.photos/200?image=2" alt="Random Photo"></li>
+        <li><img src="https://picsum.photos/200?image=3" alt="Random Photo"></li>
+        <li><img src="https://picsum.photos/200?image=4" alt="Random Photo"></li>
+    </ul>
+
+    <h3>Example 2: Hover transitions</h3>
+
+    <div id="example-hover-transitions">
+        <div class="hover-transition hover-transition-1">Color Change</div>
+        <div class="hover-transition hover-transition-2">Fade In / Fade Out</div>
+        <div class="hover-transition hover-transition-3">Text Growth</div>
+    </div>
+
+    <h3>Example 3: Rotate Transform with Transition</h3>
+
+    <div id="example-clock">
+        <div id="example-seconds-hand"></div>
+    </div>
+    <button id="example-clock-trigger">Start 1 Minute Clock</button>
+
     <script type="text/javascript">
+
+        /**
+         * Example 1:
+         */
+        setInterval( function() {
+            var slideShow = document.getElementById('example-slide-show');
+            // Loop through all the children elements
+            for( var s = 0; s < slideShow.children.length; s++ ) {
+                if ( slideShow.children[s].className === 'active' ) {
+                    slideShow.children[s].className = '';
+                    // If we have more slides to show, move to the next. If we are at the end, go back to the first one.
+                    if ( s+1 < slideShow.children.length ) {
+                        slideShow.children[s+1].className = 'active';
+                    } else {
+                        slideShow.children[0].className = 'active';
+                    }
+                    break;
+                }
+            }
+        }, 3000);
+
+        /**
+         * Example 3: Seconds Hand
+         */
+        document.getElementById('example-clock-trigger').addEventListener('click', function() {
+            var clock = document.getElementById('example-clock');
+            clock.className = 'active';
+        });
+
+        // Once the transition has ended, let's remove the active class so that it can be applied again
+        document.getElementById('example-seconds-hand').addEventListener('transitionend', function() {
+            var clock = document.getElementById('example-clock');
+            clock.className = '';
+        });
 
     </script>
 
