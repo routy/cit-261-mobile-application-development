@@ -2,11 +2,131 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Topic 10 - </title>
+    <title>Topic 10 - HTML5 Tags - Video, Audio, and Canvas</title>
+    <style type="text/css">
+        video {
+            margin:10px;
+            height:300px;
+            width:400px;
+        }
+    </style>
 </head>
 <body>
 
+    <h2>Audio</h2>
+    <h4>Barking Dog</h4>
+    <audio controls>
+        <source src="assets/labrador-barking-daniel_simon.mp3" type="audio/mpeg">
+        Your browser does not support the audio element.
+    </audio>
+
+    <h4>Morse Code</h4>
+    <audio controls>
+        <source src="assets/sos-morse-code_daniel-simion.mp3" type="audio/mpeg">
+        Your browser does not support the audio element.
+    </audio>
+
+    <h4>Whistling</h4>
+    <audio controls>
+        <source src="assets/soundbible-person-whistling-at-girl-daniel_simon.mp3" type="audio/mpeg">
+        Your browser does not support the audio element.
+    </audio>
+
+    <h2>Video</h2>
+    <h4>Slow Motion Vespa</h4>
+    <video autoplay loop controls muted oncanplay="this.play()" onloadedmetadata="this.muted=true" poster="">
+        <source type="video/mp4" src="https://staging.coverr.co/s3/mp4/Vespa-Bokeh.mp4">
+        <source type="video/webm" src="https://staging.coverr.co/s3/webm/Vespa-Bokeh.webm">
+    </video>
+
+    <h2>Canvas</h2>
+    <h4>Text Overlaying an Image</h4>
+    <canvas id="canvas-example" width="600px" height="900px"></canvas>
+
     <script type="text/javascript">
+
+        window.onload = function(){
+
+            var canvas = document.getElementById('canvas-example');
+            var context = canvas.getContext('2d');
+            var image = new Image();
+
+            image.onload = function(){
+                // We want to insert the image
+                context.drawImage(image, 10, 10, 400, 600 );
+
+                context.fillStyle = "black";
+                context.strokeStyle = "white";
+                roundRect( context, 105, 100, 225, 150, 20, true, true );
+
+                context.fillStyle = "white";
+                context.font = 'normal 18pt Arial';
+                context.textAlign = 'center';
+                context.fillText( 'Hello, my name is:', 215, 150);
+                context.font = 'normal 35pt Arial';
+                context.fillText( 'Nick', 215, 215);
+            };
+            image.src = "assets/glass.jpg";
+
+        };
+
+        /**
+         *
+         * Draws a rounded rectangle using the current state of the canvas.
+         * If you omit the last three params, it will draw a rectangle outline with a 5 pixel border radius.
+         *
+         * @param {CanvasRenderingContext2D} ctx
+         * @param {Number} x The top left x coordinate
+         * @param {Number} y The top left y coordinate
+         * @param {Number} width The width of the rectangle
+         * @param {Number} height The height of the rectangle
+         * @param {Number} [radius = 5] The corner radius; It can also be an object
+         *                 to specify different radii for corners
+         * @param {Number} [radius.tl = 0] Top left
+         * @param {Number} [radius.tr = 0] Top right
+         * @param {Number} [radius.br = 0] Bottom right
+         * @param {Number} [radius.bl = 0] Bottom left
+         * @param {Boolean} [fill = false] Whether to fill the rectangle.
+         * @param {Boolean} [stroke = true] Whether to stroke the rectangle.
+         *
+         * https://stackoverflow.com/questions/1255512/how-to-draw-a-rounded-rectangle-on-html-canvas
+         */
+        function roundRect(ctx, x, y, width, height, radius, fill, stroke) {
+
+            if (typeof stroke === 'undefined') {
+                stroke = true;
+            }
+            if (typeof radius === 'undefined') {
+                radius = 5;
+            }
+            if (typeof radius === 'number') {
+                radius = {tl: radius, tr: radius, br: radius, bl: radius};
+            } else {
+                var defaultRadius = {tl: 0, tr: 0, br: 0, bl: 0};
+                for (var side in defaultRadius) {
+                    radius[side] = radius[side] || defaultRadius[side];
+                }
+            }
+            ctx.beginPath();
+            ctx.moveTo(x + radius.tl, y);
+            ctx.lineTo(x + width - radius.tr, y);
+            ctx.quadraticCurveTo(x + width, y, x + width, y + radius.tr);
+            ctx.lineTo(x + width, y + height - radius.br);
+            ctx.quadraticCurveTo(x + width, y + height, x + width - radius.br, y + height);
+            ctx.lineTo(x + radius.bl, y + height);
+            ctx.quadraticCurveTo(x, y + height, x, y + height - radius.bl);
+            ctx.lineTo(x, y + radius.tl);
+            ctx.quadraticCurveTo(x, y, x + radius.tl, y);
+            ctx.closePath();
+
+            if (fill) {
+                ctx.fill();
+            }
+            if (stroke) {
+                ctx.stroke();
+            }
+
+        }
 
     </script>
 
