@@ -2,13 +2,64 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Topic 12 - </title>
+    <title>Topic 12 - Designing, Defining, and Triggering CSS3 Transforms without Custom Libraries (Thought Library)</title>
+    <style type="text/css">
+
+        /*
+         * Styles for Example 1
+         */
+        #example-clock {
+            background: #FFFFFF;
+            border: 2px solid #000000;
+            border-radius: 500px;
+            height:250px;
+            width:250px;
+        }
+
+        #example-seconds-hand {
+            width: 2px;
+            height: 120px;
+            background: #FF0000;
+            margin: 5px auto 0 auto;
+            transition: transform 0s linear; /* When we remove the active class, we want it to get back to it's original position without any visible transform */
+            transform-origin: bottom center;
+        }
+
+        #example-clock.active #example-seconds-hand {
+            transform: rotate(360deg);
+            transition: transform 60s linear; /* Seconds in 1 minute */
+        }
+
+    </style>
 </head>
 <body>
 
-    <script type="text/javascript">
+<h1>Exploring CSS Transforms by Example</h1>
 
-    </script>
+<h3>Example 1: Rotate Transform with Transition</h3>
+
+<div id="example-clock">
+    <div id="example-seconds-hand"></div>
+</div>
+<button id="example-clock-trigger">Start 1 Minute Clock</button>
+
+<script type="text/javascript">
+
+    /**
+     * Example 1: Seconds Hand
+     */
+    document.getElementById('example-clock-trigger').addEventListener('click', function() {
+        var clock = document.getElementById('example-clock');
+        clock.className = 'active';
+    });
+
+    // Once the transition has ended, let's remove the active class so that it can be applied again
+    document.getElementById('example-seconds-hand').addEventListener('transitionend', function() {
+        var clock = document.getElementById('example-clock');
+        clock.className = '';
+    });
+
+</script>
 
 </body>
 </html>

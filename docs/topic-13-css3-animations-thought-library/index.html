@@ -2,13 +2,43 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Topic 13 - </title>
+    <title>Topic 13 - Designing, Defining, and Triggering CSS3 Animations without Custom Libraries (Thought Library)</title>
+    <style type="text/css">
+        #bobble-head {
+            position: relative;
+            margin-left: 50px;
+            margin-top: 30px;
+            width: 200px;
+        }
+        #head {
+            position: absolute;
+            left: 57px;
+            transform: rotate(-12deg);
+            animation:bobble 1s ease-in-out infinite;
+        }
+        @keyframes bobble {
+            0% { transform:rotate(-12deg); }
+            50% { transform:rotate(12deg); }
+            100% { transform:rotate(-12deg); }
+        }
+        #body {
+            margin-top:151px;
+        }
+    </style>
 </head>
 <body>
+
+    <h1>Exploring CSS Animations by Example</h1>
+
+    <h3>Example: Bobble Head</h3>
+
+    <div id="bobble-head">
+        <img id="head" src="assets/head.png" alt="Head"/>
+        <img id="body" src="assets/body.png" alt="Body"/>
+    </div>
 
     <script type="text/javascript">
 
     </script>
-
 </body>
 </html>
