@@ -8,17 +8,86 @@
 var TVMaze_API = function ()
 {
     this.cache = {};
-    this.lastRequest = false;
+    this.lastRequest  = false;
+    this.lastResponse = false;
 };
 
+/**
+ *
+ * @param name
+ * @param value
+ */
+TVMaze_API.prototype.setCache = function( name, value )
+{
+    value = JSON.stringify( value );
+    this.cache[name] = value;
+
+    localStorage.setItem( name, value );
+};
+
+/**
+ *
+ * Cache expires every 5 minutes
+ *
+ * @param name
+ * @returns {*}
+ */
+TVMaze_API.prototype.getCache = function( name )
+{
+    var date = new Date();
+    var timestamp = date.getTime();
+
+    if ( this.cache.hasOwnProperty( name ) && this.cache[name].setAt < timestamp - 5 * 60) {
+
+        return this.cache;
+
+    } else if ( localStorage.getItem( name ) ) {
+
+        var value = JSON.parse( localStorage.getItem( name ) );
+
+        if ( value.setAt < timestamp - 5 * 60 ) {
+            return value;
+        }
+
+    }
+
+    return false;
+
+};
+
+/**
+ * @todo Loop through the cache values in local storage and the local cache object and clear it
+ */
+TVMaze_API.prototype.removeExpiredCache = function()
+{
+
+};
+
+/**
+ *
+ * @param query
+ * @param callback
+ * @returns {*}
+ */
 TVMaze_API.prototype.get = function( query, callback )
 {
     var request = this._request();
+    var self = this;
+    var response = false;
 
     if ( request !== false ) {
 
-        requestInstance.request.open( 'GET', 'https://api.chucknorris.io/jokes/random', true );
-        requestInstance.request.send();
+
+
+        this.lastRequest = query;
+
+        // If the request has already been performed in the last 5 minutes, let's use the cache
+        if ( cache.hasOwnProperty( query ) && cache[query].setAt < timestamp - 5 * 60) {
+            return cache[query].response;
+        }
+
+        request.request.open( 'GET', 'https://api.tvmaze.com/' + query, true );
+        request.request.send();
 
         /*
 
@@ -34,19 +103,30 @@ TVMaze_API.prototype.get = function( query, callback )
 
         */
 
-        requestInstance.request.addEventListener("load", function() {
+        request.request.addEventListener( 'load', function() {
 
             // Transform the received JSON string into an object
-            response = JSON.parse( requestInstance.request.responseText );
+            response = JSON.parse( request.request.responseText );
 
-            // Instantiate a new joke and set the response content as the values for it
-            let joke = new Joke( response );
+            // Save the response into the cache
+            self.cache[query] = {};
+            self.cache[query].response = response;
+            self.cache[query].setAt = response;
 
-            // Add the new joke to the jokes array
-            self.jokes.push(joke);
+            this.lastResponse = response;
 
-            // Display the joke that was just added
-            self.setCurrentJoke(self.jokes.length-1);
+            callback( response );
+
+        }, false);
+
+        request.request.addEventListener( 'error', function() {
+
+            // Transform the received JSON string into an object
+            response = JSON.parse( request.request.responseText );
+
+            this.lastResponse = response;
+
+            callback( response );
 
         }, false);
 
@@ -61,86 +141,4 @@ TVMaze_API.prototype.get = function( query, callback )
 TVMaze_API.prototype._request = function()
 {
     return (window.XMLHttpRequest) ? new XMLHttpRequest() : false;
-};
-
-
-
-const Request = function() {
-
-    this.request = null;
-
-    // Starting in IE7, we no longer have to use ActiveXObject, they all use XMLHttpRequest
-    if (window.XMLHttpRequest) {
-        this.request = new XMLHttpRequest();
-    } else {
-        this.request = false;
-    }
-
-};
-
-/**
- *
- */
-const Jokes = function() {
-
-    this.jokes = [];
-    this.currentJoke = 0;
-
-};
-
-/**
- *
- */
-const Joke = function( values ) {
-
-    this.category = (typeof values.category !== 'undefined') ? values.category : null;
-    this.icon_url = (typeof values.icon_url !== 'undefined') ? values.icon_url : null;
-    this.id       = (typeof values.id       !== 'undefined') ? values.id : null;
-    this.url      = (typeof values.url      !== 'undefined') ? values.url : null;
-    this.value    = (typeof values.value    !== 'undefined') ? values.value : null;
-
-};
-
-/**
- *
- */
-Jokes.prototype.getJoke = function() {
-
-    let self = this;
-    let requestInstance  = new Request();
-
-    requestInstance.request.open( 'GET', 'https://api.chucknorris.io/jokes/random', true );
-    requestInstance.request.send();
-
-
-    /*
-
-    Below are the different event types that can be listened for:
-
-    requestInstance.request.addEventListener("progress", function() {} );
-    requestInstance.request.addEventListener("load", function() {});
-    requestInstance.request.addEventListener("error", function() {});
-    requestInstance.request.addEventListener("abort", function() {});
-
-    // This last one will fire but not tell us if it was successful or not, it could be considered a 'Done' status.
-    requestInstance.request.addEventListener("loadend", function() {});
-
-    */
-
-    requestInstance.request.addEventListener("load", function() {
-
-        // Transform the received JSON string into an object
-        response = JSON.parse( requestInstance.request.responseText );
-
-        // Instantiate a new joke and set the response content as the values for it
-        let joke = new Joke( response );
-
-        // Add the new joke to the jokes array
-        self.jokes.push(joke);
-
-        // Display the joke that was just added
-        self.setCurrentJoke(self.jokes.length-1);
-
-    }, false);
-
 };
