@@ -15,9 +15,16 @@ var TVMaze_Model_Season = function ( id )
 
 };
 
+TVMaze_Model_Season.prototype.getId = function( )
+{
+    return this.id;
+};
+
 TVMaze_Model_Season.prototype.setId = function( id )
 {
     this.id = id;
+
+    return this;
 };
 
 TVMaze_Model_Season.prototype.getEpisodes = function( )
@@ -29,7 +36,16 @@ TVMaze_Model_Season.prototype.getEpisodes = function( )
     }
 
     var episodes  = this.get( this.baseQuery + this.id + '/episodes' );
-    this.episodes = episodes;
 
-    return episodes;
+    if ( episodes && episodes.length > 0 ) {
+
+        for ( var e = 0; e < episodes.length; e++ ) {
+
+            this.episodes.push( new TVMaze_Model_Episode( episodes[e] ) );
+
+        }
+
+    }
+
+    return this.episodes;
 };

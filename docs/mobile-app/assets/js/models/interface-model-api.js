@@ -10,7 +10,7 @@ var TVMaze_Interface_Model_API = function ()
     this.baseQuery = null;
 };
 
-TVMaze_Model_Episode.prototype.get = function( query, callback )
+TVMaze_Interface_Model_API.prototype.get = function( query, callback )
 {
     query = this.baseQuery + query;
 
