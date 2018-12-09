@@ -7,7 +7,18 @@
  *****************************************************************************/
 var TVMaze_View = function( params )
 {
+    this.templates = {};
+};
 
+TVMaze_View.prototype.draw = function( templateID, params )
+{
+    console.log('Function Call: TVMaze_View.draw', templateID, params);
+
+    params   = ( params && typeof params === 'object' ) ? params : {};
+
+    var html = this._template( templateID, params );
+
+    document.getElementsByTagName('main')[0].innerHTML = html;
 };
 
 /**
@@ -18,17 +29,17 @@ var TVMaze_View = function( params )
  */
 TVMaze_View.prototype._template = function (templateID, params) {
     // Retrieve the HTML of the template either from cache, or from the DOM if it hasn't been set.
-    var template = ( this.templates.hasOwnProperty(templateID) ) ? this.templates[templateID] : document.getElementById( templateID ).innerHTML;
+    var template = ( this.templates.hasOwnProperty(templateID) ) ? this.templates[templateID] : document.getElementById( 'template-' + templateID ).innerHTML;
     if (template) {
         for (var param in params) {
             if (params.hasOwnProperty(param) && typeof params[param] !== 'undefined') {
                 // console.log('Replacing {' + param + '} with value : ' + params[param] + ' from template.', template);
-                template = this._replaceAll(template, '{' + param + '}', params[param]);
+                template = this._replaceAll(template, '{{ ' + param + ' }}', params[param]);
             }
         }
     }
     // If there is a placeholder set within the template that didn't get replaced, we want to replace it with an empty string
-    return this._replaceAll(template, '{.*}', '', false);
+    return this._replaceAll(template, '{{.*}}', '', false);
 };
 
 /**

@@ -4,23 +4,44 @@
     <meta charset="UTF-8">
     <title>TVMaze</title>
     <link type="text/css" rel="stylesheet" href="assets/css/dist/styles.package.css" />
-    <script type="text/javascript" src="assets/js/dist/scripts.package.js" />
 </head>
 <body>
+
+<main></main>
+
+<p>Data feed provided by TVMaze API</p>
 
 <script id="template-view-episodes" type="text/template">
 </script>
 <script id="template-view-index" type="text/template">
+
+    <form name="form-search-shows">
+        <label>Search by Show Name</label>
+        <input type="text" id="input-search-shows" name="search-shows" placeholder="Enter show name..." />
+        <button id="submit-search-shows">Search</button>
+    </form>
+
 </script>
 <script id="template-view-seasons" type="text/template">
 </script>
 <script id="template-view-shows" type="text/template">
+    <div id="container-shows">
+        <h3>Results for: {{ search }}</h3>
+        <ul>
+            {{ shows }}
+        </ul>
+    </div>
+
+
+
 </script>
 <script id="template-search" type="text/template">
     <div id="container-search">
         <input id="input-search" type="text" vale="{value}" />
     </div>
 </script>
+
+<script type="text/javascript" src="assets/js/dist/scripts.package.js"></script>
 
 </body>
 </html>

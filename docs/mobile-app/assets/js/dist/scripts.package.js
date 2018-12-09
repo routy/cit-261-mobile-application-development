@@ -19,10 +19,15 @@ var TVMaze_API = function ()
  */
 TVMaze_API.prototype.setCache = function( name, value )
 {
-    value = JSON.stringify( value );
-    this.cache[name] = value;
+    var date = new Date();
+    var timestamp = date.getTime();
 
-    localStorage.setItem( name, value );
+    this.cache[name] = {
+        'response' : value,
+        'setAt'    : timestamp
+    };
+
+    localStorage.setItem( name, JSON.stringify( this.cache[name] ) );
 };
 
 /**
@@ -39,14 +44,14 @@ TVMaze_API.prototype.getCache = function( name )
 
     if ( this.cache.hasOwnProperty( name ) && this.cache[name].setAt < timestamp - 5 * 60) {
 
-        return this.cache;
+        return this.cache[name].response;
 
     } else if ( localStorage.getItem( name ) ) {
 
-        var value = JSON.parse( localStorage.getItem( name ) );
+        var cache = JSON.parse( localStorage.getItem( name ) );
 
-        if ( value.setAt < timestamp - 5 * 60 ) {
-            return value;
+        if ( cache.setAt < timestamp - 5 * 60 ) {
+            return cache.response;
         }
 
     }
@@ -77,17 +82,17 @@ TVMaze_API.prototype.get = function( query, callback )
 
     if ( request !== false ) {
 
-
-
         this.lastRequest = query;
 
+        var cache = this.getCache( query );
+
         // If the request has already been performed in the last 5 minutes, let's use the cache
-        if ( cache.hasOwnProperty( query ) && cache[query].setAt < timestamp - 5 * 60) {
-            return cache[query].response;
+        if ( cache !== false ) {
+            return cache.response;
         }
 
-        request.request.open( 'GET', 'https://api.tvmaze.com/' + query, true );
-        request.request.send();
+        request.open( 'GET', 'https://api.tvmaze.com/' + query, true );
+        request.send();
 
         /*
 
@@ -103,38 +108,41 @@ TVMaze_API.prototype.get = function( query, callback )
 
         */
 
-        request.request.addEventListener( 'load', function() {
+        request.addEventListener( 'load', function() {
+
+            console.log('Event Listener: Request - Load');
 
             // Transform the received JSON string into an object
-            response = JSON.parse( request.request.responseText );
+            response = JSON.parse( request.responseText );
 
-            // Save the response into the cache
-            self.cache[query] = {};
-            self.cache[query].response = response;
-            self.cache[query].setAt = response;
+            self.setCache( query, response );
 
             this.lastResponse = response;
 
-            callback( response );
+            callback( self, response );
 
         }, false);
 
-        request.request.addEventListener( 'error', function() {
+        request.addEventListener( 'error', function() {
+
+            console.log('Event Listener: Request - Error');
 
             // Transform the received JSON string into an object
-            response = JSON.parse( request.request.responseText );
+            response = JSON.parse( request.responseText );
 
             this.lastResponse = response;
 
-            callback( response );
+            callback( self, response );
 
         }, false);
+
+    } else {
+
+        return false;
 
     }
 
-    callback( false );
-
-    return false;
+    return this;
 
 };
 
@@ -154,13 +162,37 @@ var TVMaze_Controller = function( params )
     this.view = params.view;
     this.api  = params.api;
 
+    var self = this;
+
     window.onload = function() {
-        
-        if ( document.getElementById('button-search') ) {
-            document.getElementById('button-search').onclick( function() {
-                var searchValue = document.getElementById('input-search').value;
+
+        /**
+         * Handle the search display when searching for shows by name
+         */
+        if ( document.getElementById('submit-search-shows') ) {
+
+            document.getElementById('submit-search-shows').addEventListener('click', function( event ) {
+
+                event.preventDefault();
+
+                var searchValue = document.getElementById('input-search-shows').value;
                 if ( searchValue !== '' ) {
-                    // this.api.get( '' );
+                    self.api.get( 'search/shows?q=' + encodeURI( searchValue ), function( api, response ) {
+
+                        if ( response && response.length > 0 ) {
+
+                            var shows = [];
+
+                            for ( var s = 0; response.length; s++ ) {
+
+                                shows.push( new TVMaze_Model_Show( response[s].show ) );
+
+                            }
+                        }
+
+                        self.view.draw( 'view-shows', {'shows' : shows} );
+
+                    } );
                 }
             });
         }
@@ -178,7 +210,18 @@ var TVMaze_Controller = function( params )
  *****************************************************************************/
 var TVMaze_View = function( params )
 {
+    this.templates = {};
+};
 
+TVMaze_View.prototype.draw = function( templateID, params )
+{
+    console.log('Function Call: TVMaze_View.draw', templateID, params);
+
+    params   = ( params && typeof params === 'object' ) ? params : {};
+
+    var html = this._template( templateID, params );
+
+    document.getElementsByTagName('main')[0].innerHTML = html;
 };
 
 /**
@@ -189,17 +232,17 @@ var TVMaze_View = function( params )
  */
 TVMaze_View.prototype._template = function (templateID, params) {
     // Retrieve the HTML of the template either from cache, or from the DOM if it hasn't been set.
-    var template = ( this.templates.hasOwnProperty(templateID) ) ? this.templates[templateID] : document.getElementById( templateID ).innerHTML;
+    var template = ( this.templates.hasOwnProperty(templateID) ) ? this.templates[templateID] : document.getElementById( 'template-' + templateID ).innerHTML;
     if (template) {
         for (var param in params) {
             if (params.hasOwnProperty(param) && typeof params[param] !== 'undefined') {
                 // console.log('Replacing {' + param + '} with value : ' + params[param] + ' from template.', template);
-                template = this._replaceAll(template, '{' + param + '}', params[param]);
+                template = this._replaceAll(template, '{{ ' + param + ' }}', params[param]);
             }
         }
     }
     // If there is a placeholder set within the template that didn't get replaced, we want to replace it with an empty string
-    return this._replaceAll(template, '{.*}', '', false);
+    return this._replaceAll(template, '{{.*}}', '', false);
 };
 
 /**
@@ -339,6 +382,11 @@ var TVMaze_Model_Show = function ()
 
 var containerID     = 'tv-maze-container';
 
-var TV_Maze = new TVMaze_Controller( {
-    'containerID' : containerID
+var TVMaze_Controller = new TVMaze_Controller( {
+    'containerID' : containerID,
+    'view'        : new TVMaze_View(),
+    'api'         : new TVMaze_API()
 } );
+
+// Show the default view
+TVMaze_Controller.view.draw( 'view-index' );

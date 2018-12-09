@@ -19,10 +19,15 @@ var TVMaze_API = function ()
  */
 TVMaze_API.prototype.setCache = function( name, value )
 {
-    value = JSON.stringify( value );
-    this.cache[name] = value;
+    var date = new Date();
+    var timestamp = date.getTime();
 
-    localStorage.setItem( name, value );
+    this.cache[name] = {
+        'response' : value,
+        'setAt'    : timestamp
+    };
+
+    localStorage.setItem( name, JSON.stringify( this.cache[name] ) );
 };
 
 /**
@@ -39,14 +44,14 @@ TVMaze_API.prototype.getCache = function( name )
 
     if ( this.cache.hasOwnProperty( name ) && this.cache[name].setAt < timestamp - 5 * 60) {
 
-        return this.cache;
+        return this.cache[name].response;
 
     } else if ( localStorage.getItem( name ) ) {
 
-        var value = JSON.parse( localStorage.getItem( name ) );
+        var cache = JSON.parse( localStorage.getItem( name ) );
 
-        if ( value.setAt < timestamp - 5 * 60 ) {
-            return value;
+        if ( cache.setAt < timestamp - 5 * 60 ) {
+            return cache.response;
         }
 
     }
@@ -77,17 +82,17 @@ TVMaze_API.prototype.get = function( query, callback )
 
     if ( request !== false ) {
 
-
-
         this.lastRequest = query;
 
+        var cache = this.getCache( query );
+
         // If the request has already been performed in the last 5 minutes, let's use the cache
-        if ( cache.hasOwnProperty( query ) && cache[query].setAt < timestamp - 5 * 60) {
-            return cache[query].response;
+        if ( cache !== false ) {
+            return cache.response;
         }
 
-        request.request.open( 'GET', 'https://api.tvmaze.com/' + query, true );
-        request.request.send();
+        request.open( 'GET', 'https://api.tvmaze.com/' + query, true );
+        request.send();
 
         /*
 
@@ -103,38 +108,41 @@ TVMaze_API.prototype.get = function( query, callback )
 
         */
 
-        request.request.addEventListener( 'load', function() {
+        request.addEventListener( 'load', function() {
+
+            console.log('Event Listener: Request - Load');
 
             // Transform the received JSON string into an object
-            response = JSON.parse( request.request.responseText );
+            response = JSON.parse( request.responseText );
 
-            // Save the response into the cache
-            self.cache[query] = {};
-            self.cache[query].response = response;
-            self.cache[query].setAt = response;
+            self.setCache( query, response );
 
             this.lastResponse = response;
 
-            callback( response );
+            callback( self, response );
 
         }, false);
 
-        request.request.addEventListener( 'error', function() {
+        request.addEventListener( 'error', function() {
+
+            console.log('Event Listener: Request - Error');
 
             // Transform the received JSON string into an object
-            response = JSON.parse( request.request.responseText );
+            response = JSON.parse( request.responseText );
 
             this.lastResponse = response;
 
-            callback( response );
+            callback( self, response );
 
         }, false);
+
+    } else {
+
+        return false;
 
     }
 
-    callback( false );
-
-    return false;
+    return this;
 
 };
 
