@@ -76,6 +76,8 @@ TVMaze_API.prototype.removeExpiredCache = function()
  */
 TVMaze_API.prototype.get = function( query, callback )
 {
+    console.log('Function call: TVMaze_API.get');
+
     var request = this._request();
     var self = this;
     var response = false;
@@ -88,7 +90,8 @@ TVMaze_API.prototype.get = function( query, callback )
 
         // If the request has already been performed in the last 5 minutes, let's use the cache
         if ( cache !== false ) {
-            return cache.response;
+            console.log( 'Cache entry found. Returning cached response.', cache);
+            return callback( self, cache );
         }
 
         request.open( 'GET', 'https://api.tvmaze.com/' + query, true );
@@ -110,7 +113,7 @@ TVMaze_API.prototype.get = function( query, callback )
 
         request.addEventListener( 'load', function() {
 
-            console.log('Event Listener: Request - Load');
+            console.log( 'Event Listener: Request - TVMaze_API.get.Load' );
 
             // Transform the received JSON string into an object
             response = JSON.parse( request.responseText );
@@ -125,7 +128,7 @@ TVMaze_API.prototype.get = function( query, callback )
 
         request.addEventListener( 'error', function() {
 
-            console.log('Event Listener: Request - Error');
+            console.log('Event Listener: Request - TVMaze_API.get.Error');
 
             // Transform the received JSON string into an object
             response = JSON.parse( request.responseText );
@@ -137,6 +140,8 @@ TVMaze_API.prototype.get = function( query, callback )
         }, false);
 
     } else {
+
+        console.log('Unable to retrieve XMLHttpRequest');
 
         return false;
 

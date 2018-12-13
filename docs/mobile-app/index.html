@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <title>TVMaze</title>
     <link type="text/css" rel="stylesheet" href="assets/css/dist/styles.package.css" />
 </head>
@@ -27,13 +28,10 @@
 <script id="template-view-shows" type="text/template">
     <div id="container-shows">
         <h3>Results for: {{ search }}</h3>
-        <ul>
+        <ul class="shows-list">
             {{ shows }}
         </ul>
     </div>
-
-
-
 </script>
 <script id="template-search" type="text/template">
     <div id="container-search">

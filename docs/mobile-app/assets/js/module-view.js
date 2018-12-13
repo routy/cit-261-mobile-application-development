@@ -12,9 +12,9 @@ var TVMaze_View = function( params )
 
 TVMaze_View.prototype.draw = function( templateID, params )
 {
-    console.log('Function Call: TVMaze_View.draw', templateID, params);
-
     params   = ( params && typeof params === 'object' ) ? params : {};
+
+    console.log('Function Call: TVMaze_View.draw', templateID, params );
 
     var html = this._template( templateID, params );
 
