@@ -11,10 +11,6 @@ var TVMaze_Controller = function( params )
     this.api   = params.api;
     this.shows = [];
 
-    this.currentShowId    = null;
-    this.currentSeasonId  = null;
-    this.currentEpisodeId = null;
-
     var self = this;
 
     window.onload = function() {
@@ -28,6 +24,7 @@ var TVMaze_Controller = function( params )
 
                 console.log('Event Listener Triggered: #submit-search-shows.click');
 
+                self.shows = [];
                 event.preventDefault();
 
                 var searchValue = document.getElementById('input-search-shows').value;
@@ -36,13 +33,15 @@ var TVMaze_Controller = function( params )
 
                 if ( searchValue !== '' ) {
 
-                    this.getShowsBySearch( searchValue, function( shows ) {
+                    self.getShowsBySearch( searchValue, function( shows ) {
 
                         showsHTML = '';
 
                         for ( s = 0; s < shows.length; s++ ) {
                             showsHTML += '<li class="show-item" data-id="' + shows[s].id + '" data-index="' + s + '">' + shows[s].title + '</li>';
                         }
+
+                        self.shows = shows;
 
                         self.view.draw( 'view-shows', {
                             'shows' : showsHTML,
@@ -64,12 +63,12 @@ var TVMaze_Controller = function( params )
 
                 show = self.getShowById( event.srcElement.getAttribute('data-id') );
 
-                self.view.draw( 'view-show', {
-                    'title' : show.title,
-                    'image' : show.image,
-                    'description' : show.description,
-                    'onAir' : ( show.onAir ) ? 'Yes' : 'No'
-                } );
+                show.getSeasons( function() {
+
+                    self.view.draw( 'view-show', show );
+
+                });
+
             }
 
         });
@@ -82,16 +81,15 @@ var TVMaze_Controller = function( params )
  * @param searchValue
  * @param callback
  */
-TVMaze_Controller.prototype.getShowsBySearch = function( searchValue, callback) {
+TVMaze_Controller.prototype.getShowsBySearch = function( searchValue, callback ) {
 
-    self.api.get( 'search/show?q=' + encodeURI( searchValue ), function( api, response ) {
+    this.api.get( 'search/shows?q=' + encodeURI( searchValue ), function( api, response ) {
 
         if ( response && response.length > 0 ) {
 
             var shows = [];
-            var s = 0;
 
-            for ( s = 0; s < response.length; s++ ) {
+            for ( var s = 0; s < response.length; s++ ) {
                 shows.push( new TVMaze_Model_Show( response[s].show ) );
             }
 
@@ -124,77 +122,6 @@ TVMaze_Controller.prototype.getShowById = function( id ) {
 
 /**
  *
- * @returns {boolean}
- */
-TVMaze_Controller.prototype.getSeasons = function() {
-
-    var show = this.getShowById( this.currentShowId );
-
-    if ( show && show.hasOwnProperty('seasons') ) {
-        return show.seasons;
-    }
-
-    return false;
-
-};
-
-/**
- * 
- * @param show
- * @param id
- * @returns {boolean}
- */
-TVMaze_Controller.prototype.getSeasonById = function( show, id ) {
-
-    if ( show === null || !show.hasOwnProperty( 'seasons' ) || show.seasons.length === 0 )
-        return false;
-
-    var season = this.getItemByNameValue( this.show.seasons, 'id', id );
-
-    return ( season ) ? season : false;
-
-};
-
-/**
- *
- * @returns {*}
- */
-TVMaze_Controller.prototype.getEpisodes = function() {
-
-    var show   = this.getShowById( this.currentShowId );
-
-    if ( !show || show.hasOwnProperty( 'seasons' ) || show.seasons.length === 0 )
-        return false;
-
-    var season = this.getSeasonById( show, this.currentSeasonId );
-
-    if ( season && season.hasOwnProperty( 'episodes' ) ) {
-        return season.episodes;
-    }
-
-    return false;
-
-};
-
-/**
- *
- * @param season
- * @param id
- * @returns {boolean}
- */
-TVMaze_Controller.prototype.getEpisodeById = function( season, id ) {
-
-    if ( show === null || !show.hasOwnProperty( 'seasons' ) || show.seasons.length === 0 )
-        return false;
-
-    var episode = this.getItemByNameValue( season.episodes, 'id', id );
-
-    return ( episode ) ? episode : false;
-
-};
-
-/**
- *
  * @param objects
  * @param fieldName
  * @param fieldValue
@@ -202,9 +129,12 @@ TVMaze_Controller.prototype.getEpisodeById = function( season, id ) {
  * @private
  */
 TVMaze_Controller.prototype.getItemByNameValue = function( objects, fieldName, fieldValue ) {
-    var results = jQuery.grep(objects, function(obj){ return obj[fieldName] === fieldValue; });
-    if ( results.length > 0 ) {
-        return results[0];
+    for ( var o = 0; o < objects.length; o++ ) {
+        for (var key in objects[o]) {
+            if (key === fieldName && objects[o][key] == fieldValue) {
+                return objects[o];
+            }
+        }
     }
     return false;
 };

@@ -25,6 +25,22 @@
 </script>
 <script id="template-view-seasons" type="text/template">
 </script>
+<script id="template-view-show" type="text/template">
+    <div id="container-show">
+        <h3>{{ title }} <span class="show-rating">{{ rating.average }}</span></h3>
+        <img src="{{ images.medium }}" alt="{{ title }}"/>
+
+        <h4>Information</h4>
+        <p>Status: {{ status }}</p>
+        <p>Premiered: {{ premierDate }}</p>
+        <p>Seasons: {{ seasons.length }}</p>
+
+        <h4>Description</h4>
+        <div>
+            {{ description }}
+        </div>
+    </div>
+</script>
 <script id="template-view-shows" type="text/template">
     <div id="container-shows">
         <h3>Results for: {{ search }}</h3>

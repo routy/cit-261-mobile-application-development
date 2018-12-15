@@ -5,47 +5,50 @@
  * @constructor
  *
  *****************************************************************************/
-var TVMaze_Model_Season = function ( id )
+var TVMaze_Model_Season = function ( showId, season )
 {
-    TVMaze_Interface_Model_API.call( this );
+    this.episodes    = false;
+    this.id          = season.id;
+    this.showId      = showId;
+    this.number      = season.number;
+    this.title       = (season.name !== '') ? season.name : season.number;
+    this.premierDate = season.premierDate;
+    this.endDate     = season.endDate;
+    this.description = season.summary;
 
-    this.baseQuery = 'seasons/';
-    this.id  = id;
-    this.episodes  = [];
-
+    this.baseQuery = 'shows/' + this.showId + '/seasons/' + this.id + '/';
 };
 
-TVMaze_Model_Season.prototype.getId = function( )
-{
-    return this.id;
-};
+/**
+ *
+ */
+TVMaze_Model_Season.prototype.getEpisodes = function( callback ) {
 
-TVMaze_Model_Season.prototype.setId = function( id )
-{
-    this.id = id;
+    var self = this;
 
-    return this;
-};
-
-TVMaze_Model_Season.prototype.getEpisodes = function( )
-{
-    this.id = id;
-
-    if ( this.episodes ) {
-        return this.episodes;
+    if ( this.hasOwnProperty('episodes') && this.episodes !== false ) {
+        callback( this.episodes );
+        return;
     }
 
-    var episodes  = this.get( this.baseQuery + this.id + '/episodes' );
+    if ( this.episodes === false ) {
 
-    if ( episodes && episodes.length > 0 ) {
+        TVMaze_Controller_Instance.api.get( this.baseQuery + 'episodes', function( api, response ) {
 
-        for ( var e = 0; e < episodes.length; e++ ) {
+            self.episodes = [];
 
-            this.episodes.push( new TVMaze_Model_Episode( episodes[e] ) );
+            if ( response && response.length > 0 ) {
 
-        }
+                for ( var s = 0; s < response.length; s++ ) {
+                    self.seasons.push( new TVMaze_Model_Episode( self.showId, self.id, response[s] ) );
+                }
+
+            }
+
+            callback( self.episodes );
+
+        } );
 
     }
 
-    return this.episodes;
 };

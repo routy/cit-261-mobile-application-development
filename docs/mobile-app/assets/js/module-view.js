@@ -31,12 +31,26 @@ TVMaze_View.prototype._template = function (templateID, params) {
     // Retrieve the HTML of the template either from cache, or from the DOM if it hasn't been set.
     var template = ( this.templates.hasOwnProperty(templateID) ) ? this.templates[templateID] : document.getElementById( 'template-' + templateID ).innerHTML;
     if (template) {
-        for (var param in params) {
-            if (params.hasOwnProperty(param) && typeof params[param] !== 'undefined') {
-                // console.log('Replacing {' + param + '} with value : ' + params[param] + ' from template.', template);
-                template = this._replaceAll(template, '{{ ' + param + ' }}', params[param]);
+
+        var regex     = /\{\{\s([a-z.]+)\s\}\}/gim;
+        var variables = [];
+
+        while ( null !== ( match = regex.exec( template ) ) ) {
+            variables.push( match[1] );
+        }
+
+        var replacementValue = null;
+
+        console.log(variables);
+
+        if ( variables && variables.length > 0 ) {
+            for ( var v = 0; v < variables.length; v++ ) {
+                /*jshint evil: true */
+                eval( 'replacementValue = (typeof params.' + variables[v] + ' !== "undefined" ) ? params.' + variables[v] + ' : "";' );
+                template = this._replaceAll( template, '{{ ' + variables[v] + ' }}', replacementValue );
             }
         }
+
     }
     // If there is a placeholder set within the template that didn't get replaced, we want to replace it with an empty string
     return this._replaceAll(template, '{{.*}}', '', false);
