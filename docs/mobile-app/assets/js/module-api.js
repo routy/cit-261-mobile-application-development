@@ -8,8 +8,6 @@
 var TVMaze_API = function ()
 {
     this.cache = {};
-    this.lastRequest  = false;
-    this.lastResponse = false;
 };
 
 /**

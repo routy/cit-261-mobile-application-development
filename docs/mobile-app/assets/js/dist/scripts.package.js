@@ -8,8 +8,6 @@
 var TVMaze_API = function ()
 {
     this.cache = {};
-    this.lastRequest  = false;
-    this.lastResponse = false;
 };
 
 /**
@@ -164,9 +162,9 @@ TVMaze_API.prototype._request = function()
  *****************************************************************************/
 var TVMaze_Controller = function( params )
 {
-    this.view  = params.view;
-    this.api   = params.api;
-    this.shows = [];
+    this.view    = params.view;
+    this.api     = params.api;
+    this.shows   = [];
 
     var self = this;
 
@@ -228,6 +226,14 @@ var TVMaze_Controller = function( params )
 
             }
 
+        });
+
+        /*
+         * Listen for back button
+         */
+        document.getElementById('navigation-previous').addEventListener('click', function( event ) {
+            // Re-draw the last view
+            self.view.drawPrevious();
         });
 
     };
@@ -306,6 +312,27 @@ TVMaze_Controller.prototype.getItemByNameValue = function( objects, fieldName, f
 var TVMaze_View = function( params )
 {
     this.templates = {};
+    this.history = [];
+    this.current = null;
+};
+
+TVMaze_View.prototype.drawPrevious = function()
+{
+    if ( this.current !== null && this.history.length > 0 ) {
+        
+        var loop = true;
+        var lastView = null;
+
+        while ( loop ) {
+            // Retrieve the last entry in the history
+            lastView = this.history.pop();
+            // If it doesn't match the current view, then it must be the previous one
+            if ( lastView.templateID !== this.current ) {
+                this.draw( lastView.templateID, lastView.params );
+                loop = false;
+            }
+        }
+    }
 };
 
 TVMaze_View.prototype.draw = function( templateID, params )
@@ -317,6 +344,16 @@ TVMaze_View.prototype.draw = function( templateID, params )
     var html = this._template( templateID, params );
 
     document.getElementsByTagName('main')[0].innerHTML = html;
+
+    // Set the name of the currently active template
+    this.current = templateID;
+
+    // Push a history entry so that we can navigate back if needed
+    this.history.push( {
+        'templateID' : templateID,
+        'params' : params
+    } );
+
 };
 
 /**
@@ -325,7 +362,7 @@ TVMaze_View.prototype.draw = function( templateID, params )
  * @param params
  * @private
  */
-TVMaze_View.prototype._template = function (templateID, params) {
+TVMaze_View.prototype._template = function ( templateID, params ) {
     // Retrieve the HTML of the template either from cache, or from the DOM if it hasn't been set.
     var template = ( this.templates.hasOwnProperty(templateID) ) ? this.templates[templateID] : document.getElementById( 'template-' + templateID ).innerHTML;
     if (template) {

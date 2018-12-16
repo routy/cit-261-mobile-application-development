@@ -7,9 +7,9 @@
  *****************************************************************************/
 var TVMaze_Controller = function( params )
 {
-    this.view  = params.view;
-    this.api   = params.api;
-    this.shows = [];
+    this.view    = params.view;
+    this.api     = params.api;
+    this.shows   = [];
 
     var self = this;
 
@@ -71,6 +71,14 @@ var TVMaze_Controller = function( params )
 
             }
 
+        });
+
+        /*
+         * Listen for back button
+         */
+        document.getElementById('navigation-previous').addEventListener('click', function( event ) {
+            // Re-draw the last view
+            self.view.drawPrevious();
         });
 
     };
