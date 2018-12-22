@@ -15,7 +15,7 @@ var TVMaze_View = function( params )
 TVMaze_View.prototype.drawPrevious = function()
 {
     if ( this.current !== null && this.history.length > 0 ) {
-        
+
         var loop = true;
         var lastView = null;
 
@@ -37,18 +37,35 @@ TVMaze_View.prototype.draw = function( templateID, params )
 
     console.log('Function Call: TVMaze_View.draw', templateID, params );
 
-    var html = this._template( templateID, params );
+    try {
 
-    document.getElementsByTagName('main')[0].innerHTML = html;
+        var html = this._template( templateID, params );
 
-    // Set the name of the currently active template
-    this.current = templateID;
+        document.getElementsByTagName('main')[0].innerHTML = html;
 
-    // Push a history entry so that we can navigate back if needed
-    this.history.push( {
-        'templateID' : templateID,
-        'params' : params
-    } );
+        // Set the name of the currently active template
+        this.current = templateID;
+
+        // Push a history entry so that we can navigate back if needed
+        this.history.push( {
+            'templateID' : templateID,
+            'params' : params
+        } );
+
+        if ( this.history.length > 1 ) {
+            document.getElementById('navigation-previous').style.display = 'inline-block';
+        } else {
+            document.getElementById('navigation-previous').style.display = 'none';
+        }
+
+        window.scrollTo(0, 0);
+
+    } catch( error ) {
+
+        // Show that an error happened
+        console.log( error );
+        return;
+    }
 
 };
 
@@ -115,4 +132,27 @@ TVMaze_View.prototype._replaceAll = function (string, find, replace, escape) {
         return string.replace(new RegExp(find, 'g'), replace);
     }
     return false;
+};
+
+/**
+ *
+ * @param status
+ */
+TVMaze_View.prototype.loading = function( status ) {
+    console.log('Function Call: Loading', status);
+    document.getElementById('loading').className = ( status === true ) ? 'visible' : 'hidden';
+};
+
+/**
+ *
+ * @param status
+ */
+TVMaze_View.prototype.error = function( status ) {
+    console.log('Function Call: Error', status);
+    document.getElementById('loading').style.display = ( status === true ) ? 'block' : 'none';
+    if ( status === true ) {
+        document.getElementById('loading-content').className = 'error';
+    } else {
+        document.getElementById('loading-content').className = '';
+    }
 };

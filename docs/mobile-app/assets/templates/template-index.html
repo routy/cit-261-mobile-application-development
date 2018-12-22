@@ -4,26 +4,40 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <title>TVMaze</title>
+    <link href="https://fonts.googleapis.com/css?family=Fjalla+One|Open+Sans" rel="stylesheet">
     <link type="text/css" rel="stylesheet" href="assets/css/dist/styles.package.css" />
 </head>
 <body>
-
 <header>
-    <button id="navigation-previous">Back</button>
-    <h1>TVMaze App</h1>
+    <h1><button id="navigation-previous">Back</button>TVMaze App</h1>
     <form name="form-search-shows">
-        <label>Search by Show Name</label>
-        <input type="text" id="input-search-shows" name="search-shows" placeholder="Enter show name..." />
-        <button id="submit-search-shows">Search</button>
+        <p style="text-align: center;">Search by Show Name</p>
+        <div id="search-wrapper">
+            <input type="text" id="input-search-shows" name="search-shows" placeholder="Enter show name..." />
+            <button id="submit-search-shows">Search</button>
+        </div>
     </form>
 </header>
 <main></main>
-
-<p>Data feed provided by TVMaze API</p>
+<footer>
+    <p>Data feed provided by TVMaze API</p>
+</footer>
 
 {{ templates }}
 
 <script type="text/javascript" src="assets/js/dist/scripts.package.js"></script>
+
+<div id="loading">
+    <div id="loading-inner">
+        <div id="loading-content">
+            <div id="bobble-head">
+                <img id="head" src="assets/img/head.png" alt="Head"/>
+                <img id="body" src="assets/img/body.png" alt="Body"/>
+            </div>
+            <p id="loading-text"></p>
+        </div>
+    </div>
+</div>
 
 </body>
 </html>

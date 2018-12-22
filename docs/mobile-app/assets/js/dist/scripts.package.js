@@ -76,6 +76,8 @@ TVMaze_API.prototype.get = function( query, callback )
 {
     console.log('Function call: TVMaze_API.get');
 
+    TVMaze_Controller_Instance.view.loading(true);
+
     var request = this._request();
     var self = this;
     var response = false;
@@ -89,7 +91,11 @@ TVMaze_API.prototype.get = function( query, callback )
         // If the request has already been performed in the last 5 minutes, let's use the cache
         if ( cache !== false ) {
             console.log( 'Cache entry found. Returning cached response.', cache);
-            return callback( self, cache );
+
+            callback( self, cache );
+            TVMaze_Controller_Instance.view.loading(false);
+
+            return;
         }
 
         request.open( 'GET', 'https://api.tvmaze.com/' + query, true );
@@ -122,6 +128,8 @@ TVMaze_API.prototype.get = function( query, callback )
 
             callback( self, response );
 
+            TVMaze_Controller_Instance.view.loading(false);
+
         }, false);
 
         request.addEventListener( 'error', function() {
@@ -135,9 +143,13 @@ TVMaze_API.prototype.get = function( query, callback )
 
             callback( self, response );
 
+            TVMaze_Controller_Instance.view.loading(false);
+
         }, false);
 
     } else {
+
+        TVMaze_Controller_Instance.view.loading(false);
 
         console.log('Unable to retrieve XMLHttpRequest');
 
@@ -192,11 +204,37 @@ var TVMaze_Controller = function( params )
 
                         showsHTML = '';
 
-                        for ( s = 0; s < shows.length; s++ ) {
-                            showsHTML += '<li class="show-item" data-id="' + shows[s].id + '" data-index="' + s + '">' + shows[s].title + '</li>';
+                        if (shows.length > 0) {
+                            showsHTML += '<ul id="shows-list">';
+                            for (s = 0; s < shows.length; s++) {
+                                showsHTML += '<li class="show-item" data-id="' + shows[s].id + '" data-index="' + s + '">';
+                                showsHTML += '<div class="flex-grid-gutter">';
+                                    showsHTML += '<div class="col col-1-4">';
+                                    showsHTML += '<span class="show-item-img" ';
+                                    if ( shows[s].images && typeof shows[s].images.medium !== 'undefined' ) {
+                                        showsHTML += 'style="background-image: url(' + shows[s].images.medium + ');"';
+                                    } else {
+                                        showsHTML += 'style="background-image: url(assets/img/show-image-unavailable-medium.jpg);"';
+                                    }
+                                    showsHTML += '></span>';
+                                    showsHTML += '</div>';
+                                    showsHTML += '<div class="col col-3-4">';
+                                        if ( shows[s].genre && typeof shows[s].genre !== 'undefined' ) {
+                                            showsHTML += '<span class="show-item-genre">' + shows[s].genre + '</span>';
+                                        }
+                                        showsHTML += '<span class="show-item-title">' + shows[s].title + '</span>';
+                                        if ( shows[s].network && typeof shows[s].network.name !== 'undefined' ) {
+                                            showsHTML += '<span class="show-item-network">' + shows[s].network.name + ' (' + shows[s].network.country.code + ')' + '</span>';
+                                        }
+                                    showsHTML += '</div>';
+                                showsHTML += '</div>';
+                                showsHTML += '</li>';
+                            }
+                            showsHTML += '</ul>';
+                            self.shows = shows;
+                        } else {
+                            showsHTML = '<p>No matching shows were found.</p>';
                         }
-
-                        self.shows = shows;
 
                         self.view.draw( 'view-shows', {
                             'shows' : showsHTML,
@@ -213,19 +251,22 @@ var TVMaze_Controller = function( params )
          */
         document.addEventListener('click', function( event ) {
 
-            // If a show item is clicked on, let's display more information about the show
             if ( event.srcElement.className === 'show-item' ) {
-
-                show = self.getShowById( event.srcElement.getAttribute('data-id') );
-
-                show.getSeasons( function() {
-
-                    self.view.draw( 'view-show', show );
-
-                });
-
+                showItem = event.srcElement;
+            } else {
+                showItem = event.srcElement.closest('.show-item');
             }
 
+            if ( showItem ) {
+
+                show = self.getShowById( showItem.getAttribute('data-id') );
+
+                if ( show ) {
+                    show.getSeasons(function () {
+                        self.view.draw('view-show', show);
+                    });
+                }
+            }
         });
 
         /*
@@ -319,7 +360,7 @@ var TVMaze_View = function( params )
 TVMaze_View.prototype.drawPrevious = function()
 {
     if ( this.current !== null && this.history.length > 0 ) {
-        
+
         var loop = true;
         var lastView = null;
 
@@ -341,18 +382,35 @@ TVMaze_View.prototype.draw = function( templateID, params )
 
     console.log('Function Call: TVMaze_View.draw', templateID, params );
 
-    var html = this._template( templateID, params );
+    try {
 
-    document.getElementsByTagName('main')[0].innerHTML = html;
+        var html = this._template( templateID, params );
 
-    // Set the name of the currently active template
-    this.current = templateID;
+        document.getElementsByTagName('main')[0].innerHTML = html;
 
-    // Push a history entry so that we can navigate back if needed
-    this.history.push( {
-        'templateID' : templateID,
-        'params' : params
-    } );
+        // Set the name of the currently active template
+        this.current = templateID;
+
+        // Push a history entry so that we can navigate back if needed
+        this.history.push( {
+            'templateID' : templateID,
+            'params' : params
+        } );
+
+        if ( this.history.length > 1 ) {
+            document.getElementById('navigation-previous').style.display = 'inline-block';
+        } else {
+            document.getElementById('navigation-previous').style.display = 'none';
+        }
+
+        window.scrollTo(0, 0);
+
+    } catch( error ) {
+
+        // Show that an error happened
+        console.log( error );
+        return;
+    }
 
 };
 
@@ -421,6 +479,28 @@ TVMaze_View.prototype._replaceAll = function (string, find, replace, escape) {
     return false;
 };
 
+/**
+ *
+ * @param status
+ */
+TVMaze_View.prototype.loading = function( status ) {
+    console.log('Function Call: Loading', status);
+    document.getElementById('loading').className = ( status === true ) ? 'visible' : 'hidden';
+};
+
+/**
+ *
+ * @param status
+ */
+TVMaze_View.prototype.error = function( status ) {
+    console.log('Function Call: Error', status);
+    document.getElementById('loading').style.display = ( status === true ) ? 'block' : 'none';
+    if ( status === true ) {
+        document.getElementById('loading-content').className = 'error';
+    } else {
+        document.getElementById('loading-content').className = '';
+    }
+};
 /*****************************************************************************
  *
  * Interface Model: API
@@ -532,7 +612,21 @@ var TVMaze_Model_Show = function ( show )
     this.description = show.summary;
     this.status      = show.status;
     this.rating      = show.rating;
-    this.premierDate = show.premiered;
+    this.premierDate = (show.premiered) ? new Date( show.premiered ) : null;
+    this.genre       = (show.genres && show.genres.length > 0) ? show.genres[0] : null;
+    this.network     = show.network;
+
+    if ( this.premierDate !== null ) {
+        this.premierDate = this.premierDate.getMonth() + '/' + this.premierDate.getFullYear();
+    }
+
+    if ( this.images === null ) {
+        this.images = { 'original' : null, 'medium' : null };
+    }
+
+    this.hasRating      = (typeof show.rating.average !== 'undefined' && show.rating.average !== null)  ? 1 : 0;
+    this.hasDescription = (typeof show.summary !== 'undefined') ? 1 : 0;
+    this.hasImage       = (this.images.original !== null) ? 1 : 0;
 
     this.baseQuery = 'shows/' + this.id + '/';
 

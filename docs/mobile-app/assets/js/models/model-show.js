@@ -16,7 +16,21 @@ var TVMaze_Model_Show = function ( show )
     this.description = show.summary;
     this.status      = show.status;
     this.rating      = show.rating;
-    this.premierDate = show.premiered;
+    this.premierDate = (show.premiered) ? new Date( show.premiered ) : null;
+    this.genre       = (show.genres && show.genres.length > 0) ? show.genres[0] : null;
+    this.network     = show.network;
+
+    if ( this.premierDate !== null ) {
+        this.premierDate = this.premierDate.getMonth() + '/' + this.premierDate.getFullYear();
+    }
+
+    if ( this.images === null ) {
+        this.images = { 'original' : null, 'medium' : null };
+    }
+
+    this.hasRating      = (typeof show.rating.average !== 'undefined' && show.rating.average !== null)  ? 1 : 0;
+    this.hasDescription = (typeof show.summary !== 'undefined') ? 1 : 0;
+    this.hasImage       = (this.images.original !== null) ? 1 : 0;
 
     this.baseQuery = 'shows/' + this.id + '/';
 

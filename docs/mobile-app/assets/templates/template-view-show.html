@@ -1,16 +1,23 @@
 <script id="template-view-show" type="text/template">
     <div id="container-show">
-        <h3>{{ title }} <span class="show-rating">{{ rating.average }}</span></h3>
-        <img src="{{ images.medium }}" alt="{{ title }}"/>
-
-        <h4>Information</h4>
-        <p>Status: {{ status }}</p>
-        <p>Premiered: {{ premierDate }}</p>
-        <p>Seasons: {{ seasons.length }}</p>
-
-        <h4>Description</h4>
-        <div>
-            {{ description }}
+        <h3>{{ title }} <span class="show-rating container-visible-{{ hasRating }}">{{ rating.average }} / 10</span></h3>
+        <div class="show-image-container container-visible-{{ hasImage }}">
+            <img src="{{ images.original }}" alt="{{ title }}"/>
         </div>
+        <div id="show-information">
+            <h4>Information</h4>
+            <ul class="show-information">
+                <li><label>Status</label>{{ status }}</li>
+                <li><label>Premiered</label>{{ premierDate }}</li>
+                <li><label>Seasons</label>{{ seasons.length }}</li>
+            </ul>
+            <div class="show-description container-visible-{{ hasDescription }}">
+                <h4>Description</h4>
+                <div>
+                    {{ description }}
+                </div>
+            </div>
+        </div>
+
     </div>
 </script>

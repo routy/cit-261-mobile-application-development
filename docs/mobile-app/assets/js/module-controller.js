@@ -37,11 +37,37 @@ var TVMaze_Controller = function( params )
 
                         showsHTML = '';
 
-                        for ( s = 0; s < shows.length; s++ ) {
-                            showsHTML += '<li class="show-item" data-id="' + shows[s].id + '" data-index="' + s + '">' + shows[s].title + '</li>';
+                        if (shows.length > 0) {
+                            showsHTML += '<ul id="shows-list">';
+                            for (s = 0; s < shows.length; s++) {
+                                showsHTML += '<li class="show-item" data-id="' + shows[s].id + '" data-index="' + s + '">';
+                                showsHTML += '<div class="flex-grid-gutter">';
+                                    showsHTML += '<div class="col col-1-4">';
+                                    showsHTML += '<span class="show-item-img" ';
+                                    if ( shows[s].images && typeof shows[s].images.medium !== 'undefined' ) {
+                                        showsHTML += 'style="background-image: url(' + shows[s].images.medium + ');"';
+                                    } else {
+                                        showsHTML += 'style="background-image: url(assets/img/show-image-unavailable-medium.jpg);"';
+                                    }
+                                    showsHTML += '></span>';
+                                    showsHTML += '</div>';
+                                    showsHTML += '<div class="col col-3-4">';
+                                        if ( shows[s].genre && typeof shows[s].genre !== 'undefined' ) {
+                                            showsHTML += '<span class="show-item-genre">' + shows[s].genre + '</span>';
+                                        }
+                                        showsHTML += '<span class="show-item-title">' + shows[s].title + '</span>';
+                                        if ( shows[s].network && typeof shows[s].network.name !== 'undefined' ) {
+                                            showsHTML += '<span class="show-item-network">' + shows[s].network.name + ' (' + shows[s].network.country.code + ')' + '</span>';
+                                        }
+                                    showsHTML += '</div>';
+                                showsHTML += '</div>';
+                                showsHTML += '</li>';
+                            }
+                            showsHTML += '</ul>';
+                            self.shows = shows;
+                        } else {
+                            showsHTML = '<p>No matching shows were found.</p>';
                         }
-
-                        self.shows = shows;
 
                         self.view.draw( 'view-shows', {
                             'shows' : showsHTML,
@@ -58,19 +84,22 @@ var TVMaze_Controller = function( params )
          */
         document.addEventListener('click', function( event ) {
 
-            // If a show item is clicked on, let's display more information about the show
             if ( event.srcElement.className === 'show-item' ) {
-
-                show = self.getShowById( event.srcElement.getAttribute('data-id') );
-
-                show.getSeasons( function() {
-
-                    self.view.draw( 'view-show', show );
-
-                });
-
+                showItem = event.srcElement;
+            } else {
+                showItem = event.srcElement.closest('.show-item');
             }
 
+            if ( showItem ) {
+
+                show = self.getShowById( showItem.getAttribute('data-id') );
+
+                if ( show ) {
+                    show.getSeasons(function () {
+                        self.view.draw('view-show', show);
+                    });
+                }
+            }
         });
 
         /*

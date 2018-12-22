@@ -21,7 +21,7 @@ gulp.task('js', function () {
         js_path + 'models/**/*.js',
         js_path + 'index.js'
     ])
-        .pipe(jshint())
+        .pipe(jshint( { esversion: 6 } ))
         .pipe(jshint.reporter('default'))
         .pipe(concat('scripts.package.js'))
         .pipe(gulp.dest( js_path + 'dist/' ))

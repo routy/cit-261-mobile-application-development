@@ -76,6 +76,8 @@ TVMaze_API.prototype.get = function( query, callback )
 {
     console.log('Function call: TVMaze_API.get');
 
+    TVMaze_Controller_Instance.view.loading(true);
+
     var request = this._request();
     var self = this;
     var response = false;
@@ -89,7 +91,11 @@ TVMaze_API.prototype.get = function( query, callback )
         // If the request has already been performed in the last 5 minutes, let's use the cache
         if ( cache !== false ) {
             console.log( 'Cache entry found. Returning cached response.', cache);
-            return callback( self, cache );
+
+            callback( self, cache );
+            TVMaze_Controller_Instance.view.loading(false);
+
+            return;
         }
 
         request.open( 'GET', 'https://api.tvmaze.com/' + query, true );
@@ -122,6 +128,8 @@ TVMaze_API.prototype.get = function( query, callback )
 
             callback( self, response );
 
+            TVMaze_Controller_Instance.view.loading(false);
+
         }, false);
 
         request.addEventListener( 'error', function() {
@@ -135,9 +143,13 @@ TVMaze_API.prototype.get = function( query, callback )
 
             callback( self, response );
 
+            TVMaze_Controller_Instance.view.loading(false);
+
         }, false);
 
     } else {
+
+        TVMaze_Controller_Instance.view.loading(false);
 
         console.log('Unable to retrieve XMLHttpRequest');
 
